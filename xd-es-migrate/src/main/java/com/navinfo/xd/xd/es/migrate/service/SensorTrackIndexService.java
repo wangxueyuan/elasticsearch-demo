@@ -1,5 +1,6 @@
 package com.navinfo.xd.xd.es.migrate.service;
 
+import com.navinfo.xd.utils.StringUtils;
 import com.navinfo.xd.xd.es.migrate.bean.SensorTrackIndex;
 import com.navinfo.xd.xd.es.migrate.repository.SensorTrackIndexRepository;
 import org.elasticsearch.action.search.SearchType;
@@ -67,6 +68,19 @@ public class SensorTrackIndexService {
 
             sensorTrackIndex.setGeom(geom);
             result.add(sensorTrackIndex);
+        }
+        stir.saveAll(result);
+    }
+
+    public void updateSensorTrackIndicesSourceJobPublisher(String jobid,String sourceJob,String publisher) {
+        List<SensorTrackIndex> result = new ArrayList<>();
+        List<SensorTrackIndex> stis = stir.getSensorTrackIndicesByJobId(jobid);
+        for (SensorTrackIndex sensorTrackIndex : stis) {
+            if (StringUtils.isEmpty(sensorTrackIndex.getSourceJob())) {
+                sensorTrackIndex.setSourceJob(sourceJob);
+                sensorTrackIndex.setPublisher(publisher);
+                result.add(sensorTrackIndex);
+            }
         }
         stir.saveAll(result);
     }

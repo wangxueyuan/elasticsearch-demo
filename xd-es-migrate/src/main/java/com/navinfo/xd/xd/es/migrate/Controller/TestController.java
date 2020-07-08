@@ -4,6 +4,7 @@ import com.navinfo.xd.xd.es.migrate.bean.CurTrackIndex;
 import com.navinfo.xd.xd.es.migrate.bean.SensorTrackIndex;
 import com.navinfo.xd.xd.es.migrate.repository.CurTrackIndexRepository;
 import com.navinfo.xd.xd.es.migrate.repository.SensorTrackIndexRepository;
+import com.navinfo.xd.xd.es.migrate.service.SensorMediaIndexService;
 import com.navinfo.xd.xd.es.migrate.service.SensorTrackIndexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -26,23 +27,16 @@ import java.util.TreeSet;
 @Slf4j
 @RestController
 public class TestController {
-    @Autowired
-    private UserRepository customerRepository;
+
     @Autowired
     private SensorTrackIndexRepository sensorTrackIndexRepository;
     @Autowired
     private CurTrackIndexRepository curTrackIndexRepository;
     @Autowired
-    private Media1IndexRepository media1IndexRepository;
-    @Autowired
     private SensorTrackIndexService sensorTrackIndexService;
+    @Autowired
+    private SensorMediaIndexService sensorMediaIndexService;
 
-    @GetMapping("/test")
-    public void test(@RequestParam("name") String name, @RequestParam("time") String time,
-                     @RequestParam("id") String id) {
-        Media1 media1 = new Media1(name, time, id);
-        media1IndexRepository.save(media1);
-    }
 
     @GetMapping("/migrate")
     public void migrate() {
@@ -71,12 +65,6 @@ public class TestController {
         log.info("the tree set is {}", set.size());
     }
 
-    @GetMapping("/get/customer")
-    public void getCustomer() {
-        Iterable<User> iterable = customerRepository.findAll();
-        iterable.forEach(customer -> log.info(customer.getFirstname()));
-    }
-
     @GetMapping("/get/aggregation")
     public void getAggregation() {
 
@@ -89,6 +77,28 @@ public class TestController {
     public String updateTracks(String jobId) {
         try {
             sensorTrackIndexService.updateSensorTrackIndices(jobId);
+        } catch (Exception e) {
+            return "false";
+        }
+        return "success";
+    }
+
+    @GetMapping("/update/tracks/sourceJob/publisher")
+    public String updateTracksSourceJob(@RequestParam String jobId, @RequestParam String sourceJob,
+                                        @RequestParam String publisher) {
+        try {
+            sensorTrackIndexService.updateSensorTrackIndicesSourceJobPublisher(jobId,sourceJob,publisher);
+        } catch (Exception e) {
+            return "false";
+        }
+        return "success";
+    }
+
+    @GetMapping("/update/medias/sourceJob/publisher")
+    public String updateMediasSourceJob(@RequestParam String jobId, @RequestParam String sourceJob,
+                                        @RequestParam String publisher) {
+        try {
+            sensorMediaIndexService.updateSensorMediaIndicesSourceJobPublisher(jobId,sourceJob,publisher);
         } catch (Exception e) {
             return "false";
         }

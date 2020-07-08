@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -23,13 +22,12 @@ import java.util.TreeSet;
  * @Version: 1.0
  **/
 @Slf4j
-//@Component
-public class TrackExport implements ApplicationRunner {
+public class TrackExport {
     @Autowired
     private SensorTrackIndexRepository sensorTrackIndexRepository;
     @Autowired
     private CurTrackIndexRepository curTrackIndexRepository;
-    @Override
+
     public void run(ApplicationArguments args) throws Exception {
         log.info("Start to export data...");
         TreeSet<Long> set = new TreeSet<>();
