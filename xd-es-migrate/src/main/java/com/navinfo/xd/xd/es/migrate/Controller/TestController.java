@@ -2,18 +2,18 @@ package com.navinfo.xd.xd.es.migrate.Controller;
 
 import com.navinfo.xd.xd.es.migrate.bean.CurTrackIndex;
 import com.navinfo.xd.xd.es.migrate.bean.SensorTrackIndex;
+import com.navinfo.xd.xd.es.migrate.bean.request.UpdateIndexRequest;
 import com.navinfo.xd.xd.es.migrate.repository.CurTrackIndexRepository;
 import com.navinfo.xd.xd.es.migrate.repository.SensorTrackIndexRepository;
 import com.navinfo.xd.xd.es.migrate.service.SensorMediaIndexService;
 import com.navinfo.xd.xd.es.migrate.service.SensorTrackIndexService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +83,18 @@ public class TestController {
         return "success";
     }
 
-    @GetMapping("/update/tracks/sourceJob/publisher")
-    public String updateTracksSourceJob(@RequestParam String jobId, @RequestParam String sourceJob,
-                                        @RequestParam String publisher) {
+    @PostMapping("/update/tracks/sourceJob/publisher")
+    public String updateTracksSourceJob(@RequestBody List<UpdateIndexRequest> requests) {
         try {
-            sensorTrackIndexService.updateSensorTrackIndicesSourceJobPublisher(jobId,sourceJob,publisher);
+            for (UpdateIndexRequest request : requests) {
+                log.info("jobid->{},sourcejob->{},publisher->{} ",request.getJobId(),request.getSourceJob(),
+                        request.getPublisher());
+                String jobId = request.getJobId();
+                String sourceJob = request.getSourceJob();
+                String publisher = request.getPublisher();
+                sensorTrackIndexService.updateSensorTrackIndicesSourceJobPublisher(jobId,sourceJob,publisher);
+                sensorMediaIndexService.updateSensorMediaIndicesSourceJobPublisher(jobId,sourceJob,publisher);
+            }
         } catch (Exception e) {
             return "false";
         }
